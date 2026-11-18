@@ -1,0 +1,18 @@
+{
+  "description": "Raw materials gathered in bulk: any item the market's common_resource class holds, paying 1.25 times its base price per unit. Built in; loads only with the market add-on.",
+  "market_class": "variable_economy:common_resource",
+  "quantity": {
+    "min": 64,
+    "max": 512
+  },
+  "payout": {
+    "multiplier": 1.25
+  },
+  "weight": 40,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "variable_economy_market"
+    }
+  ]
+}

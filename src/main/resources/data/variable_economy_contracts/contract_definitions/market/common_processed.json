@@ -1,0 +1,18 @@
+{
+  "description": "Smelted and crafted basics: any item the market's common_processed class holds, paying 1.25 times its base price per unit. Built in; loads only with the market add-on.",
+  "market_class": "variable_economy:common_processed",
+  "quantity": {
+    "min": 32,
+    "max": 256
+  },
+  "payout": {
+    "multiplier": 1.25
+  },
+  "weight": 20,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "variable_economy_market"
+    }
+  ]
+}

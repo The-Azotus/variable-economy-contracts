@@ -1,0 +1,42 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+issueTrackerURL="${repo_url}/issues"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+displayURL="${repo_url}"
+description='''
+A shared board of delivery contracts for Variable Economy. Claim a contract with a deposit, deliver the items and
+get paid. Contracts come from definitions in datapacks; with the market add-on, they can pay by market value.
+'''
+
+[[dependencies.${mod_id}]]
+    modId="neoforge"
+    type="required"
+    versionRange="[${neo_version},)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="variable_economy"
+    type="required"
+    versionRange="${core_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="variable_economy_market"
+    type="optional"
+    versionRange="${market_version_range}"
+    ordering="AFTER"
+    side="BOTH"

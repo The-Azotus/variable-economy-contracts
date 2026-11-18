@@ -1,0 +1,21 @@
+{
+  "description": "A fixed-payout vanilla contract. Built in; loads only without the market add-on, whose class definitions replace these.",
+  "tag": "minecraft:logs",
+  "quantity": {
+    "min": 64,
+    "max": 512
+  },
+  "payout": {
+    "per_unit": 10
+  },
+  "weight": 2,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "variable_economy_market"
+      }
+    }
+  ]
+}

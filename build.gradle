@@ -1,0 +1,29 @@
+// Variable Economy: Contracts (mod id variable_economy_contracts): the contract board, contract definitions, deposits
+// and payouts. The build itself is in buildSrc (variable-economy.mod.gradle).
+plugins {
+    id 'variable-economy.mod'
+}
+
+description = 'Variable Economy: Contracts: a shared board of delivery contracts with deposits.'
+
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
+}
+
+dependencies {
+    // Core, which contracts requires (gradle.properties says which core and where it comes from). The main code may
+    // use only core's api package; the GameTests may reach into core's internals too.
+    compileOnly economyMod('core')
+    gametestImplementation economyMod('core')
+    localRuntime economyMod('core')
+    // The market, optional: only compat/MarketBridge reads its api package, and only when it is loaded. Neither the
+    // runs nor the GameTests load it: contracts' tests check the board without the market.
+    compileOnly(economyMod('market')) { transitive = false }
+    // Core's optional mods, so contracts is tested with them (and without them by -PwithoutMods).
+    runWith('ftbteams')
+    runWith('progressivestages')
+    runWith('kubejs')
+}
+
+// MarketBridge is the one class that may use the market's api package.
+boundaryExceptions['variableeconomy/contracts/compat/MarketBridge.java'] = ['variableeconomy.market.api.']

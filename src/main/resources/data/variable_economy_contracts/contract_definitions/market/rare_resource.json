@@ -1,0 +1,18 @@
+{
+  "description": "Rare raw materials: any item the market's rare_resource class holds, paying 1.25 times its base price per unit. Built in; loads only with the market add-on.",
+  "market_class": "variable_economy:rare_resource",
+  "quantity": {
+    "min": 4,
+    "max": 16
+  },
+  "payout": {
+    "multiplier": 1.25
+  },
+  "weight": 5,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "variable_economy_market"
+    }
+  ]
+}
