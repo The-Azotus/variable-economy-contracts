@@ -2,7 +2,7 @@
 
 What changed in each release of the contracts add-on, for players and server admins. Mod and add-on authors: the API's changes are in the [add-on guide's changelog](docs/api.md#changelog). Core's changes, and the whole of each Variable Economy release, are in [core's changelog](https://github.com/The-Azotus/variable-economy-core/blob/main/CHANGELOG.md).
 
-## 0.6.1 (unreleased)
+## 0.6.1 (2026-11-17)
 
 - Contracts now live in their own repository; nothing changes in game.
 - The mod's jar no longer contains its test code.

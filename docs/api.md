@@ -157,7 +157,7 @@ Core's add-on guide has a worked example set up this way.
 
 The API changes that concern contracts. Core's and the market's are in their own add-on guides.
 
-- **0.6.1 (unreleased):** contracts is its own repository and release; nothing in its API changed.
+- **0.6.1 (2026-11-17):** contracts is its own repository and release; nothing in its API changed.
 
 - **0.6.0 (2026-11-14):** breaks every add-on. The mod is renamed from Dynamic-Economy to Variable Economy, split into four mods, and its API is replaced (core's add-on guide has the whole list).
   - Contracts is a separate optional mod, `variable_economy_contracts`. Check its mod ID before using its package.
