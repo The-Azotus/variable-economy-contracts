@@ -12,9 +12,9 @@ The build is one project. `build.gradle` names the mods contracts builds against
 
 **Core and the market.** Contracts builds against core, and compiles against the market's API (it never loads the market in its tests or runs). `gradle.properties` says which versions and where they come from:
 
-- `core_source=local` and `market_source=local`, the defaults until the mods are on CurseForge, use `variableeconomy:core:<core_version>` and `variableeconomy:market:<market_version>` from your local Maven. Clone [variable-economy-core](https://github.com/The-Azotus/variable-economy-core) and [variable-economy-market](https://github.com/The-Azotus/variable-economy-market) and run `gradlew publishToMavenLocal` in each, core first.
-- `curseforge` will use the released jars through CurseMaven once the CurseForge project and file IDs (`core_curseforge_project`, `core_curseforge_file` and the market's) are filled in.
-- `-Pcore_source=local` and `-Pmarket_source=local` override it.
+- `core_source=curseforge` and `market_source=curseforge`, the defaults, use the released jars that the `core_curseforge_*` and `market_curseforge_*` properties name, through [CurseMaven](https://www.cursemaven.com/): core 0.6.1 is `curse.maven:variable-economy-1818087:9710072` and the market 0.6.1 `curse.maven:variable-economy-market-1818103:9717524`.
+- `core_source=local` and `market_source=local` use `variableeconomy:core:<core_version>` and `variableeconomy:market:<market_version>` from your local Maven instead, for building against a core or market that isn't released. Clone [variable-economy-core](https://github.com/The-Azotus/variable-economy-core) and [variable-economy-market](https://github.com/The-Azotus/variable-economy-market) and run `gradlew publishToMavenLocal` in each, core first.
+- `-Pcore_source=local` and `-Pmarket_source=local` set them for one build.
 
 **Tasks:**
 
