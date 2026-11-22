@@ -33,7 +33,8 @@ public final class ContractsConfig {
                         "the board or use contracts by command; operators and the console always can.")
                 .defineEnum("access_mode", AccessMode.COMMAND_AND_BLOCK);
         MAX_QUANTITY_PER_REQUEST = builder
-                .comment("Largest quantity a single delivery may hand in. Larger deliveries are rejected with TOO_LARGE.")
+                .comment("Largest quantity a single delivery may hand in. Larger deliveries are rejected with TOO_LARGE, except",
+                        "the one delivery that finishes a contract while delivery.partial_allowed is false.")
                 .defineInRange("max_quantity_per_request", 640, 1, 1_000_000);
 
         builder.comment("The Contract Board: a board of delivery orders, shared by every player and replaced every few",

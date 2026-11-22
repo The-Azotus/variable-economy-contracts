@@ -3,10 +3,8 @@ package variableeconomy.contracts.command;
 import variableeconomy.core.api.CoreApi;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.arguments.item.ItemArgument;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import java.util.Optional;
 import variableeconomy.contracts.ContractSettings;
 import variableeconomy.contracts.menu.ContractBoardMenu;
 import com.mojang.brigadier.CommandDispatcher;
@@ -104,7 +102,7 @@ public final class ContractCommands {
     private static final int DEFINITIONS_PER_PAGE = 8;
 
     /**
-     * Every contract definition with its terms, where it came from and whether it can offer contracts now, ten a page;
+     * Every contract definition with its terms, where it came from and whether it can offer contracts now, eight a page;
      * then the files the last load skipped and the diagnostics' warnings.
      */
     private static int definitions(CommandContext<CommandSourceStack> ctx, int page) {

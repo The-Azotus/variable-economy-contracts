@@ -75,10 +75,6 @@ final class ContractsView {
         return true;
     }
 
-    boolean panelClicked(double mouseX, double mouseY) {
-        return false;
-    }
-
     void renderTooltip(GuiGraphics graphics, int index, int mouseX, int mouseY) {
         if (index >= 0) {
             graphics.renderTooltip(screen.font(), contractTooltip(contractLines().get(index)), Optional.empty(), mouseX, mouseY);
@@ -91,7 +87,23 @@ final class ContractsView {
 
     void renderPanel(GuiGraphics graphics, int x, int y, int mouseX, int mouseY) {
         renderContractPanel(graphics, x, y);
-        screen.renderQuantityNote(graphics, x + screen.noteX, y + screen.noteY);
+        if (selectedContractLine() != null) {
+            screen.renderQuantityNote(graphics, x + screen.noteX, y + screen.noteY);
+        }
+    }
+
+    /**
+     * The most one delivery to the selected contract may hold: the server's per-request limit, except that with
+     * batches off the one delivery that finishes a contract may be larger (as the server allows), so it is what the
+     * contract still wants.
+     */
+    int deliveryLimit() {
+        ContractPayloads.ContractLine line = selectedContractLine();
+        return line != null ? deliveryLimit(line) : ClientContractState.maxQuantity();
+    }
+
+    private static int deliveryLimit(ContractPayloads.ContractLine line) {
+        return ClientContractState.partialAllowed() ? ClientContractState.maxQuantity() : Math.max(1, line.remaining());
     }
 
     private static List<ContractPayloads.ContractLine> contractLines() {
@@ -128,13 +140,20 @@ final class ContractsView {
             screen.quantityNoteFor = screen.quantityValue();
             return;
         }
-        screen.setQuantity(Math.min(Math.min(held, line.remaining()), ClientContractState.maxQuantity()), Component.empty());
+        screen.setQuantity(Math.min(Math.min(held, line.remaining()), deliveryLimit(line)), Component.empty());
     }
 
     /** Client-side hints only; the server re-checks everything and replies with the real outcome. */
     void refreshButtons() {
         ContractPayloads.ContractLine line = selectedContractLine();
         ContractPayloads.Contracts board = ClientContractState.contracts();
+        if (screen.quantityValue() != screen.quantityNoteFor) {
+            screen.quantityNote = Component.empty();
+        }
+        boolean selected = line != null && board != null;
+        screen.showQuantityControls(selected);
+        contractButton.visible = selected;
+        abandonButton.visible = selected;
         if (line == null || board == null) {
             contractButton.setMessage(Component.translatable("screen.variable_economy_contracts.contracts.claim"));
             contractButton.active = false;
@@ -148,7 +167,7 @@ final class ContractsView {
             int qty = screen.quantityValue();
             contractButton.setMessage(Component.translatable("screen.variable_economy_contracts.contracts.deliver", PriceFormat.amount(qty)));
             Component problem = qty <= 0 ? Component.translatable("screen.variable_economy_contracts.result.invalid_quantity")
-                    : qty > ClientContractState.maxQuantity() ? Component.translatable("screen.variable_economy_contracts.result.too_large")
+                    : qty > deliveryLimit(line) ? Component.translatable("screen.variable_economy_contracts.result.too_large")
                     : qty > line.remaining() ? Component.translatable("screen.variable_economy_contracts.result.contract_full")
                     : qty < line.remaining() && !ClientContractState.partialAllowed()
                     ? Component.translatable("screen.variable_economy_contracts.result.whole_delivery")
@@ -213,7 +232,7 @@ final class ContractsView {
 
     private void startDeliveryQuantity(ContractPayloads.ContractLine line) {
         int held = ClientContractState.held(line.item());
-        screen.setQuantity(Math.max(1, Math.min(Math.min(held, line.remaining()), ClientContractState.maxQuantity())), Component.empty());
+        screen.setQuantity(Math.max(1, Math.min(Math.min(held, line.remaining()), deliveryLimit(line))), Component.empty());
     }
 
     /** The board: what each contract wants, what it pays, and who holds it; the days left and the player's count above. */
@@ -288,7 +307,9 @@ final class ContractsView {
             List<net.minecraft.util.FormattedCharSequence> help = screen.font().split(
                     Component.translatable(screen.wide ? "screen.variable_economy_contracts.contracts.help" : "screen.variable_economy_contracts.contracts.select_hint"),
                     screen.panelWidth);
-            for (int i = 0; i < help.size() && screen.panelY + 4 + i * 10 < screen.controlsY - 10; i++) {
+            // The quantity controls and buttons are hidden until a contract is selected, so the help can use their room.
+            int helpBottom = screen.wide ? screen.tradeY + 38 : screen.controlsY + 18;
+            for (int i = 0; i < help.size() && screen.panelY + 4 + i * 10 <= helpBottom - 9; i++) {
                 graphics.drawString(screen.font(), help.get(i), left, y + screen.panelY + 4 + i * 10, TEXT_DIM, false);
             }
             return;
@@ -305,7 +326,7 @@ final class ContractsView {
         }
         graphics.drawString(screen.font(), screen.font().plainSubstrByWidth(stack.getHoverName().getString(), screen.panelWidth - 20), left + 20, y + screen.panelY + 4, TEXT, false);
         int right = left + screen.panelWidth;
-        int top = y + screen.chartY;
+        int top = y + screen.infoY;
         screen.infoLine(graphics, "contracts.reward", PriceFormat.amount(line.reward()), TEXT_MONEY, left, right, top);
         screen.infoLine(graphics, "contracts.per_unit", PriceFormat.decimal(java.math.BigDecimal.valueOf(line.reward())
                 .divide(java.math.BigDecimal.valueOf(line.units()), 2, RoundingMode.FLOOR)), TEXT_MONEY, left, right, top + INFO_LINE_HEIGHT);
@@ -322,7 +343,7 @@ final class ContractsView {
             case ABANDONED -> Component.translatable("screen.variable_economy_contracts.contracts.note.given_up");
         };
         List<net.minecraft.util.FormattedCharSequence> lines = screen.font().split(note, screen.panelWidth);
-        int noteTop = screen.chartY + 5 * INFO_LINE_HEIGHT + 4;
+        int noteTop = screen.infoY + INFO_LINES * INFO_LINE_HEIGHT + 4;
         for (int i = 0; i < lines.size() && noteTop + i * 10 < screen.controlsY - 9; i++) {
             graphics.drawString(screen.font(), lines.get(i), left, y + noteTop + i * 10, TEXT_DIM, false);
         }
