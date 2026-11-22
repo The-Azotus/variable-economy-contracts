@@ -2,6 +2,17 @@
 
 What changed in each release of the contracts add-on, for players and server admins. Mod and add-on authors: the API's changes are in the [add-on guide's changelog](docs/api.md#changelog). Core's changes, and the whole of each Variable Economy release, are in [core's changelog](https://github.com/The-Azotus/variable-economy-core/blob/main/CHANGELOG.md).
 
+## Unreleased
+
+**Install with core 0.6.2 or a later 0.6.x.** The network protocol is unchanged.
+
+- **Whole deliveries over the limit work from the screen.** With `delivery.partial_allowed` off, the one delivery that finishes a contract may be larger than `max_quantity_per_request`, as the server always allowed; the screen, All and the +/- buttons now allow it too.
+- **The list's scrollbar can be dragged**: click it to jump there, or hold and drag.
+- **The wide panel has no blank gap**: the selected contract's details, the quantity and the buttons sit together. Until you select a contract, the panel shows how contracts work, and the quantity and buttons are hidden.
+- The note under the quantity ("You have none") clears as soon as the quantity changes.
+- A request from the board by a player who has just died is ignored.
+- A holder's name longer than 16 characters (possible behind some proxies) no longer stops the board being sent.
+
 ## 0.6.1 (2026-11-17)
 
 - Contracts now live in their own repository; nothing changes in game.

@@ -18,11 +18,11 @@ The server puts up a **board** of contracts: orders for a number of one item, su
 
 If you **Abandon** the contract (click twice), you're paid for the units you delivered and get part of the deposit back (half by default); the button's tooltip says how much. If its time runs out first, you're paid for what you delivered, and by default the deposit is lost. If that happens while you're offline, the money still goes to your bank and you get a message when you next log in. If you claimed with a shared or party account, the payment goes back to that account (or to your personal account, if it has ended).
 
-Each row shows the item and amount, the reward, and **Open**, **Locked**, who holds it, your progress and days left (*120/256, 2d*), **Done** or **Abandoned**. Click one to see its reward, the reward per unit, the deposit, progress and how many you have. If the server has turned contracts off, the board says so.
+Click a contract to see its details; until you do, the panel explains how contracts work. Each row shows the item and amount, the reward, and **Open**, **Locked**, who holds it, your progress and days left (*120/256, 2d*), **Done** or **Abandoned**. Click one to see its reward, the reward per unit, the deposit, progress and how many you have. If the server has turned contracts off, the board says so.
 
 **What you can deliver.** Only plain items from your main inventory (hotbar and backpack rows) count: enchanted, damaged or renamed copies don't, and neither do armour, offhand or modded slots.
 
-**Rewards.** On servers with the market, a contract always pays less per unit than the market could ever sell you that item for, so buying from the market to fill one loses money. It pays more than selling the same items to the market at their normal price, so if you gather or farm the items yourself, a contract is the better deal.
+**Rewards.** On servers with the market, a contract normally pays less per unit than the market could ever sell you that item for, so buying from the market to fill one loses money. It pays more than selling the same items to the market at their normal price, so if you gather or farm the items yourself, a contract is the better deal. (An admin can turn this cap off with `contracts.clamp_to_market`; it's on by default.)
 
 **Locked contracts.** Contracts you can't claim yet, for an item you haven't unlocked or needing a stage you don't have (ProgressiveStages), show greyed out as **Locked**, with the reason in the tooltip; one you've already claimed stays yours even if you lose the stage.
 
@@ -36,7 +36,7 @@ Each row shows the item and amount, the reward, and **Open**, **Locked**, who ho
 | *Delivered N × item* | Done; deliver the rest before the contract's time runs out. |
 | *Finished the item contract: paid X* | The reward and your deposit are in the bank. |
 | *Abandoned the item contract; paid X for what you delivered and part of the deposit* | Done; the rest of the deposit is lost. |
-| *Your item contract ended before you finished it: …* | Its time ran out (or the server turned contracts off) while you were away. The message says what you delivered, what you were paid and what happened to the deposit. |
+| *Your item contract ended before you finished it: …* | Its time ran out, or the server turned contracts off. If you were offline, you get the message when you next log in. The message says what you delivered, what you were paid and what happened to the deposit. |
 | *Someone else has claimed that contract, or it's finished* | Pick another one. |
 | *That contract has expired* | Its time ran out, or the board changed while you had the screen open. |
 | *You haven't unlocked that contract yet* | The item, or the stage it needs, isn't unlocked for you. |
@@ -46,7 +46,7 @@ Each row shows the item and amount, the reward, and **Open**, **Locked**, who ho
 | *You don't hold that contract* | Only the player who claimed it can deliver or abandon it. |
 | *You don't have that many (enchanted, damaged or renamed copies don't count)* | You hold fewer plain copies than you tried to deliver. |
 | *Your bank account can't cover that* | The account you're using can't pay the deposit. |
-| *That order is too large* | Deliveries are capped (640 by default). Split it up. |
+| *That order is too large* | Deliveries are capped (640 by default). Split it up. On a server that wants every unit at once, the one delivery that finishes a contract isn't capped. |
 | *Enter a quantity of at least 1* | Set how many to deliver. |
 | *The bank is unavailable right now* | The server's bank can't be reached. Tell an admin. |
 | *Contracts are turned off on this server* | Ask an admin. |

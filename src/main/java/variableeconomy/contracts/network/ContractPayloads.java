@@ -17,6 +17,11 @@ import java.util.Map;
 
 /** Every packet the contract board sends. Rewards, deposits and balances are in bits. */
 public final class ContractPayloads {
+    /** The longest holder name a board line carries: a player name's limit. */
+    public static final int MAX_HOLDER_LENGTH = 16;
+    /** The longest missing-stage name a board line carries. */
+    public static final int MAX_STAGE_LENGTH = 256;
+
     private ContractPayloads() {
     }
 
@@ -90,17 +95,17 @@ public final class ContractPayloads {
                     ByteBufCodecs.VAR_LONG.encode(buf, line.deposit());
                     STATUS_CODEC.encode(buf, line.status());
                     buf.writeBoolean(line.mine());
-                    ByteBufCodecs.stringUtf8(16).encode(buf, line.holder());
+                    ByteBufCodecs.stringUtf8(MAX_HOLDER_LENGTH).encode(buf, line.holder());
                     buf.writeLong(line.daysLeft());
                     ByteBufCodecs.VAR_LONG.encode(buf, line.abandonRefund());
                     buf.writeBoolean(line.itemLocked());
-                    ByteBufCodecs.stringUtf8(256).encode(buf, line.missingStage());
+                    ByteBufCodecs.stringUtf8(MAX_STAGE_LENGTH).encode(buf, line.missingStage());
                 },
                 buf -> new ContractLine(ByteBufCodecs.VAR_INT.decode(buf), ResourceLocation.STREAM_CODEC.decode(buf),
                         ByteBufCodecs.VAR_INT.decode(buf), ByteBufCodecs.VAR_INT.decode(buf), ByteBufCodecs.VAR_LONG.decode(buf),
                         ByteBufCodecs.VAR_LONG.decode(buf), STATUS_CODEC.decode(buf), buf.readBoolean(),
-                        ByteBufCodecs.stringUtf8(16).decode(buf), buf.readLong(), ByteBufCodecs.VAR_LONG.decode(buf), buf.readBoolean(),
-                        ByteBufCodecs.stringUtf8(256).decode(buf)));
+                        ByteBufCodecs.stringUtf8(MAX_HOLDER_LENGTH).decode(buf), buf.readLong(), ByteBufCodecs.VAR_LONG.decode(buf), buf.readBoolean(),
+                        ByteBufCodecs.stringUtf8(MAX_STAGE_LENGTH).decode(buf)));
 
         public int remaining() {
             return units - delivered;

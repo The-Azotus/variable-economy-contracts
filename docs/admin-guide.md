@@ -17,7 +17,7 @@ For what players see, read the [player guide](player-guide.md). For mods and pac
 | --- | --- | --- | --- | --- |
 | Contracts | `variable_economy_contracts-<version>.jar` | `variable_economy_contracts` | The Contract Board, `/contracts` | Core; with the market, contracts paying on market value |
 
-Contracts needs [Variable Economy](https://github.com/The-Azotus/variable-economy-core) (core) of the same minor version (both 0.6.x, for example), so update them together. The [market add-on](https://github.com/The-Azotus/variable-economy-market) is optional, also of the same minor version. Install each one you use on the server and on every client.
+Contracts needs [Variable Economy](https://github.com/The-Azotus/variable-economy-core) (core) 0.6.2 or a later 0.6.x, so update them together. The [market add-on](https://github.com/The-Azotus/variable-economy-market) is optional: 0.6.1 or a later 0.6.x. Install each one you use on the server and on every client.
 
 Contracts has its own config file in `config/` and its own commands. Without the market, the Contract Board offers fixed-payout contracts only ([Contract definitions](#contract-definitions)).
 
@@ -180,9 +180,9 @@ Core's `ignored_components` (in `variable_economy-server.toml`) also applies to 
 | `Contract definition … (…): unknown field "…" ignored` | A misspelled or unsupported field; the rest of the file loads. |
 | `Contract definition file config/variable_economy_contracts/definitions/… isn't at <namespace>/<path>.json in lower case; skipped` | Put the file in a namespace folder, with a lowercase name without spaces. |
 | `Contract definition … pays a multiplier on market value, and the market add-on isn't installed, so it's off` (or `… asks for a market class, …`) | Install the market, or give the definition a `per_unit` payout and an `item` or `tag`. |
-| `Contract definition … asks for …, which holds no items, so it offers nothing` | The tag (or class) is empty, usually because its mod isn't installed. |
+| `Contract definition … asks for …, which holds no items, so it offers nothing` | The tag is empty, usually because its mod isn't installed. An empty market class isn't warned about; `/contracts admin definitions` shows whether each definition can offer anything. |
 | `Contract definition … pays more than buying … from the market costs, and contracts.clamp_to_market is off` | Players can profit by buying the items from the market to deliver. Lower the payout, or turn clamping back on. |
-| `Saved contract … can't be read …, so it's dropped` | A saved contract's item no longer exists, usually because its mod was removed. If the log names a holder and deposit, refund the deposit by hand with `/bank admin money give`. |
+| `Saved contract … can't be read …, so it's dropped` | A saved contract is damaged (an unreadable item ID, status or size), usually from a hand-edited or corrupted save. If the log names a holder and deposit, refund the deposit by hand with `/bank admin money give`. A contract whose item's mod was removed isn't dropped: it stays on the board as an unknown item, can't be delivered, and expires as usual. |
 | The board says *"No contracts on the board right now"* | No definition can offer an item: check `/contracts admin definitions` and `/contracts admin item <item>`. Without the market, only `per_unit` definitions for an `item` or `tag` work; with it, only items whose contract pays more than selling them to the market. Once fixed, `/contracts admin refresh` puts up a new board at once. |
 | A player sees "Contracts are only available at a Contract Board on this server" | `access_mode` is `BLOCK_ONLY`. |
 | The board says contracts are turned off | `contracts.enabled` is false. |

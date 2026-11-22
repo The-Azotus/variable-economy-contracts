@@ -41,8 +41,13 @@ public final class ContractSync {
                 .toList();
     }
 
+    /**
+     * Whether the player has the board open and may act on it. A dead player may not: vanilla keeps the screen open
+     * through death, until they respawn.
+     */
     private static boolean viewing(ServerPlayer player) {
-        return player.containerMenu instanceof ContractBoardMenu menu && menu.stillValid(player);
+        return player.containerMenu instanceof ContractBoardMenu menu && menu.stillValid(player)
+                && player.isAlive() && !player.isRemoved();
     }
 
     /** Call right after the board screen opens. */
@@ -115,7 +120,7 @@ public final class ContractSync {
     // ---- Requests --------------------------------------------------------------------------------------------
 
     /** Claim, deliver or abandon from the open board. */
-    static void handleContractRequest(ContractPayloads.ContractRequest request, ServerPlayer player) {
+    public static void handleContractRequest(ContractPayloads.ContractRequest request, ServerPlayer player) {
         if (!viewing(player)) {
             return;
         }
@@ -144,6 +149,11 @@ public final class ContractSync {
         });
     }
 
+    /** {@code text} cut to the packet's limit, so an unusually long name can't make the board fail to send. */
+    static String fit(String text, int max) {
+        return text.length() > max ? text.substring(0, max) : text;
+    }
+
     public static void sendContracts(ServerPlayer player) {
         PacketDistributor.sendToPlayer(player, contractsFor(player));
     }
@@ -154,8 +164,8 @@ public final class ContractSync {
         List<ContractPayloads.ContractLine> lines = ContractService.view(player, board).stream()
                 .map(view -> new ContractPayloads.ContractLine(view.contract().id(), view.contract().item(), view.contract().units(),
                         view.contract().delivered(), view.reward(), view.contract().deposit(), view.contract().status(), view.mine(),
-                        view.holderName(), view.daysLeft(), view.abandonRefund(), view.itemLocked(),
-                        view.missingStage().map(stage -> stage.length() > 256 ? stage.substring(0, 256) : stage).orElse("")))
+                        fit(view.holderName(), ContractPayloads.MAX_HOLDER_LENGTH), view.daysLeft(), view.abandonRefund(),
+                        view.itemLocked(), view.missingStage().map(stage -> fit(stage, ContractPayloads.MAX_STAGE_LENGTH)).orElse("")))
                 .toList();
         return new ContractPayloads.Contracts(lines, board.daysLeft(), board.claimedBy(player.getUUID()), ContractSettings.maxClaims());
     }

@@ -48,10 +48,10 @@ public final class ContractBoardScreen extends AbstractContainerScreen<ContractB
     /** The wide panel's label/value lines. */
     static final int INFO_LINES = 5;
     static final int INFO_LINE_HEIGHT = 10;
-    static final int MIN_SIDE_CHART_HEIGHT = 24;
-    static final int MAX_SIDE_CHART_HEIGHT = 80;
-    static final int NARROW_CHART_WIDTH = 118;
-    static final int NARROW_CHART_HEIGHT = 16;
+    /** The wide panel's lines for the selected contract's note, under the info lines. */
+    static final int NOTE_LINES = 3;
+    /** The fewest list rows the wide layout keeps. */
+    static final int MIN_WIDE_ROWS = 4;
     /** Width of the quantity controls: -, the box, +, and All. */
     static final int CONTROLS_WIDTH = 132;
 
@@ -81,10 +81,8 @@ public final class ContractBoardScreen extends AbstractContainerScreen<ContractB
     int panelX;
     int panelY;
     int panelWidth;
-    int chartX;
-    int chartY;
-    int chartWidth;
-    int chartHeight;
+    /** Top of the wide panel's info lines. */
+    int infoY;
     int controlsY;
     /** Top of the action buttons: one above the other when wide, side by side when narrow. */
     int tradeY;
@@ -96,6 +94,8 @@ public final class ContractBoardScreen extends AbstractContainerScreen<ContractB
     private int seenVersion = -1;
     boolean listDirty = true;
     int scroll;
+    /** Whether the scrollbar's thumb is being dragged. */
+    private boolean draggingScrollbar;
 
     /** A short explanation under the quantity, set by All; it lasts until the quantity changes. */
     Component quantityNote = Component.empty();
@@ -180,25 +180,20 @@ public final class ContractBoardScreen extends AbstractContainerScreen<ContractB
         statusY = imageHeight - 12;
         balanceInTitleRow = MARGIN + font.width(title) + 16 + font.width(balanceText(widestBalance(), false)) <= right;
 
-        // Wide: the panel is a column on the right, stacked from the top.
+        // Wide: the panel is a column on the right, stacked from the top with no gaps: the contract's name, its info
+        // lines and note, then the quantity controls (21), the quantity note (11) and the two buttons (38).
         wide = imageWidth >= WIDE_MIN_WIDTH;
         if (wide) {
             panelWidth = SIDE_WIDTH;
             panelX = right - SIDE_WIDTH;
             panelY = HEADER_Y;
-            chartX = panelX;
-            chartY = panelY + 20;
-            chartWidth = panelWidth;
-            // Under the contract's lines: 4 gap, the info lines, 4 gap, controls (21), note (11), the two buttons (38).
-            int below = 4 + INFO_LINES * INFO_LINE_HEIGHT + 4 + 21 + 11 + 38;
-            chartHeight = Math.min(MAX_SIDE_CHART_HEIGHT, bottom - below - chartY);
-            int infoY = chartY + chartHeight + 4;
-            controlsY = infoY + INFO_LINES * INFO_LINE_HEIGHT + 4;
+            infoY = panelY + 20;
+            controlsY = infoY + INFO_LINES * INFO_LINE_HEIGHT + 4 + NOTE_LINES * INFO_LINE_HEIGHT + 4;
             noteX = panelX;
             noteY = controlsY + 21;
             noteWidth = panelWidth;
             tradeY = noteY + 11;
-            wide = chartHeight >= MIN_SIDE_CHART_HEIGHT;
+            wide = tradeY + 38 <= bottom && (bottom - LIST_Y) / ROW_HEIGHT >= MIN_WIDE_ROWS;
         }
         if (wide) {
             listWidth = panelX - MARGIN - SCROLLBAR_WIDTH - 2 - LIST_X;
@@ -207,10 +202,7 @@ public final class ContractBoardScreen extends AbstractContainerScreen<ContractB
             panelX = MARGIN;
             panelWidth = right - MARGIN;
             panelY = bottom - BOTTOM_PANEL_HEIGHT;
-            chartWidth = Math.min(NARROW_CHART_WIDTH, panelWidth / 2);
-            chartHeight = NARROW_CHART_HEIGHT;
-            chartX = right - chartWidth;
-            chartY = panelY;
+            infoY = panelY;
             controlsY = panelY + 20;
             tradeY = panelY + 40;
             noteX = MARGIN + CONTROLS_WIDTH + 4;
@@ -247,7 +239,15 @@ public final class ContractBoardScreen extends AbstractContainerScreen<ContractB
     }
 
     private void adjustQuantity(int delta) {
-        setQuantity(Mth.clamp(quantityValue() + delta, 1, ClientContractState.maxQuantity()), Component.empty());
+        setQuantity(Mth.clamp(quantityValue() + delta, 1, view.deliveryLimit()), Component.empty());
+    }
+
+    /** Shows the quantity controls only while a contract is selected; the panel shows help in their place otherwise. */
+    void showQuantityControls(boolean shown) {
+        quantityControls.forEach(widget -> widget.visible = shown);
+        if (!shown && getFocused() == quantity) {
+            setFocused(null);
+        }
     }
 
     void setQuantity(int value, Component note) {
@@ -267,15 +267,60 @@ public final class ContractBoardScreen extends AbstractContainerScreen<ContractB
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            if (isOverScrollbar(mouseX, mouseY)) {
+                // A click on the track jumps there; holding the button drags the thumb.
+                draggingScrollbar = true;
+                scrollTo(mouseY);
+                return true;
+            }
             int index = rowAt(mouseX, mouseY);
             if (index >= 0 && view.rowClicked(index)) {
                 return true;
             }
-            if (view.panelClicked(mouseX, mouseY)) {
-                return true;
-            }
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (draggingScrollbar) {
+            scrollTo(mouseY);
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (draggingScrollbar && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            draggingScrollbar = false;
+            return true;
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    /** Whether the mouse is on the scrollbar of a list long enough to scroll. */
+    private boolean isOverScrollbar(double mouseX, double mouseY) {
+        double x = mouseX - leftPos - (LIST_X + listWidth + 2);
+        double y = mouseY - topPos - LIST_Y;
+        return maxScroll() > 0 && x >= -1 && x < SCROLLBAR_WIDTH + 1 && y >= 0 && y < rows * ROW_HEIGHT;
+    }
+
+    /** Scrolls so the thumb's middle sits at {@code mouseY}, as far as the list allows. */
+    private void scrollTo(double mouseY) {
+        int height = rows * ROW_HEIGHT;
+        int thumb = thumbHeight();
+        if (height <= thumb || maxScroll() == 0) {
+            return;
+        }
+        double fraction = (mouseY - topPos - LIST_Y - thumb / 2.0) / (height - thumb);
+        scroll = Mth.clamp((int) Math.round(fraction * maxScroll()), 0, maxScroll());
+    }
+
+    /** The scrollbar thumb's height: the share of the list that shows, at least 12 pixels. */
+    private int thumbHeight() {
+        int height = rows * ROW_HEIGHT;
+        return Math.min(height, Math.max(12, height * rows / Math.max(1, view.listSize())));
     }
 
     @Override
@@ -343,9 +388,12 @@ public final class ContractBoardScreen extends AbstractContainerScreen<ContractB
         view.renderPanel(graphics, x, y, mouseX, mouseY);
     }
 
-    /** The note from All, a warning when the quantity is over the delivery limit, or else the limit itself. */
+    /**
+     * The note from All, a warning when the quantity is over the delivery limit, or else the limit itself. With batches
+     * off, the one delivery that finishes a contract isn't limited, so then the limit is what the contract still wants.
+     */
     void renderQuantityNote(GuiGraphics graphics, int x, int y) {
-        int limit = ClientContractState.maxQuantity();
+        int limit = view.deliveryLimit();
         Component text;
         int color = TEXT_DIM;
         if (quantityValue() > limit) {
@@ -370,7 +418,7 @@ public final class ContractBoardScreen extends AbstractContainerScreen<ContractB
         int height = rows * ROW_HEIGHT;
         graphics.fill(left, top, left + SCROLLBAR_WIDTH, top + height, 0x40000000);
         if (maxScroll() > 0) {
-            int thumb = Math.max(12, height * rows / view.listSize());
+            int thumb = thumbHeight();
             int thumbY = top + (height - thumb) * scroll / maxScroll();
             graphics.fill(left, thumbY, left + SCROLLBAR_WIDTH, thumbY + thumb, 0xFFA0A0A8);
         }
@@ -396,11 +444,6 @@ public final class ContractBoardScreen extends AbstractContainerScreen<ContractB
     /** The widest balance the layout makes room for: about 100 billion, far beyond any likely fortune. */
     private static long widestBalance() {
         return 99_999_999_999L;
-    }
-
-    /** The toolbar room kept for the abbreviated balance: its widest form. */
-    private int balanceReserve() {
-        return font.width(balanceText(widestBalance(), true));
     }
 
     void drawRight(GuiGraphics graphics, Component text, int right, int y, int color) {

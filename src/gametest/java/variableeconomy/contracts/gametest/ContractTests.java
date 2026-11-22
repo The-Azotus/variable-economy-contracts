@@ -209,4 +209,26 @@ public final class ContractTests {
                 "the admin command names the definition: " + output);
         helper.succeed();
     }
+
+    /** Vanilla keeps a screen open through death; the board ignores a dead player's requests, so no deposit is taken. */
+    @GameTest(template = EMPTY)
+    public static void aDeadPlayersBoardRequestsAreIgnored(GameTestHelper helper) {
+        MinecraftServer server = helper.getLevel().getServer();
+        CoreFixture f = new CoreFixture(helper);
+        f.deposit(100_000);
+        f.player.setHealth(0);
+        f.player.containerMenu = ContractBoardMenu.forCommand();
+        try {
+            for (ContractBoard.Contract contract : List.copyOf(ContractBoard.get(server).contracts())) {
+                variableeconomy.contracts.network.ContractSync.handleContractRequest(new variableeconomy.contracts.network.ContractPayloads
+                        .ContractRequest(ContractService.Action.CLAIM, contract.id(), 0), f.player);
+            }
+        } finally {
+            f.player.containerMenu = f.player.inventoryMenu;
+        }
+        helper.assertValueEqual(f.balance(), 100_000, "no deposit taken");
+        helper.assertValueEqual(ContractBoard.get(server).claimedBy(f.player.getUUID()), 0, "nothing claimed");
+        f.account().deduct(f.balance());
+        helper.succeed();
+    }
 }
