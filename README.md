@@ -27,7 +27,7 @@ Each mod has its own block, screen, config file and commands. If a mod isn't ins
 
 ## Requirements and installation
 
-- [Variable Economy core](https://github.com/The-Azotus/variable-economy-core) **0.6.2** or a later 0.6.x (up to, but not including, 0.7).
+- [Variable Economy core](https://github.com/The-Azotus/variable-economy-core) **0.6.3** or a later 0.6.x (up to, but not including, 0.7).
 - Minecraft 1.21.1 with NeoForge 21.1.228 or newer, and Java 21.
 - Optional: [Variable Economy: Market](https://github.com/The-Azotus/variable-economy-market) 0.6.1 or a later 0.6.x, for contracts that pay on market value or ask for a market item class, and for payouts capped by market prices.
 - Optional, through core: [ProgressiveStages](https://modrinth.com/mod/progressivestages) 3.x, for locked contracts. FTB Teams parties and named accounts can claim through a shared account.

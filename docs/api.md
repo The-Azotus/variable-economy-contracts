@@ -157,7 +157,7 @@ Core's add-on guide has a worked example set up this way.
 
 The API changes that concern contracts. Core's and the market's are in their own add-on guides.
 
-- **Unreleased:** requires core 0.6.2 or a later 0.6.x. Nothing in the API changed.
+- **Unreleased:** requires core 0.6.3 or a later 0.6.x. Nothing in the API changed.
 
 - **0.6.1 (2026-11-17):** contracts is its own repository and release; nothing in its API changed.
 
