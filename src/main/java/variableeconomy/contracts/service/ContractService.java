@@ -5,7 +5,6 @@ import variableeconomy.contracts.ContractsModule;
 import variableeconomy.contracts.compat.MarketBridge;
 import variableeconomy.contracts.definition.ContractDefinition;
 import variableeconomy.contracts.definition.ContractDefinitions;
-import com.mojang.authlib.GameProfile;
 import variableeconomy.contracts.api.event.ContractEvent;
 import variableeconomy.core.api.AccountId;
 import variableeconomy.core.api.Accounts;
@@ -631,13 +630,9 @@ public final class ContractService {
         }
     }
 
-    /** A player's name: online, or as the server last saw them. */
+    /** A player's name, online or not, from everything core knows (including names the server's cache has forgotten). */
     public static Optional<String> name(MinecraftServer server, UUID id) {
-        ServerPlayer online = server.getPlayerList().getPlayer(id);
-        if (online != null) {
-            return Optional.of(online.getGameProfile().getName());
-        }
-        return server.getProfileCache() == null ? Optional.empty() : server.getProfileCache().get(id).map(GameProfile::getName);
+        return CoreApi.accounts().name(server, id);
     }
 
     private static ResourceLocation none() {

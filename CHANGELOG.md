@@ -4,13 +4,14 @@ What changed in each release of the contracts add-on, for players and server adm
 
 ## Unreleased
 
-**Install with core 0.6.2 or a later 0.6.x.** The network protocol is unchanged.
+**Install with core 0.6.3 or a later 0.6.x.** The network protocol is unchanged.
 
 - **Whole deliveries over the limit work from the screen.** With `delivery.partial_allowed` off, the one delivery that finishes a contract may be larger than `max_quantity_per_request`, as the server always allowed; the screen, All and the +/- buttons now allow it too.
 - **The list's scrollbar can be dragged**: click it to jump there, or hold and drag.
 - **The wide panel has no blank gap**: the selected contract's details, the quantity and the buttons sit together. Until you select a contract, the panel shows how contracts work, and the quantity and buttons are hidden.
 - The note under the quantity ("You have none") clears as soon as the quantity changes.
 - A request from the board by a player who has just died is ignored.
+- **Holders' names show** for players the server's name cache has forgotten (it keeps only the 1,000 seen most recently), using the names core remembers.
 - A holder's name longer than 16 characters (possible behind some proxies) no longer stops the board being sent.
 
 ## 0.6.1 (2026-11-17)
