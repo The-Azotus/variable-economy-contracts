@@ -2,9 +2,9 @@
 
 What changed in each release of the contracts add-on, for players and server admins. Mod and add-on authors: the API's changes are in the [add-on guide's changelog](docs/api.md#changelog). Core's changes, and the whole of each Variable Economy release, are in [core's changelog](https://github.com/The-Azotus/variable-economy-core/blob/main/CHANGELOG.md).
 
-## Unreleased
+## 0.6.2 (unreleased)
 
-**Install with core 0.6.3 or a later 0.6.x.** The network protocol is unchanged.
+**Install with core 0.6.3 or a later 0.6.x, and with the market, market 0.6.2 or later.** The network protocol is unchanged.
 
 - **Whole deliveries over the limit work from the screen.** With `delivery.partial_allowed` off, the one delivery that finishes a contract may be larger than `max_quantity_per_request`, as the server always allowed; the screen, All and the +/- buttons now allow it too.
 - **The list's scrollbar can be dragged**: click it to jump there, or hold and drag.

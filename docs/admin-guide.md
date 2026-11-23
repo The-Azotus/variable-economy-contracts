@@ -17,7 +17,7 @@ For what players see, read the [player guide](player-guide.md). For mods and pac
 | --- | --- | --- | --- | --- |
 | Contracts | `variable_economy_contracts-<version>.jar` | `variable_economy_contracts` | The Contract Board, `/contracts` | Core; with the market, contracts paying on market value |
 
-Contracts needs [Variable Economy](https://github.com/The-Azotus/variable-economy-core) (core) 0.6.3 or a later 0.6.x, so update them together. The [market add-on](https://github.com/The-Azotus/variable-economy-market) is optional: 0.6.1 or a later 0.6.x. Install each one you use on the server and on every client.
+Contracts needs [Variable Economy](https://github.com/The-Azotus/variable-economy-core) (core) 0.6.3 or a later 0.6.x, so update them together. The [market add-on](https://github.com/The-Azotus/variable-economy-market) is optional: 0.6.2 or a later 0.6.x. Install each one you use on the server and on every client.
 
 Contracts has its own config file in `config/` and its own commands. Without the market, the Contract Board offers fixed-payout contracts only ([Contract definitions](#contract-definitions)).
 
